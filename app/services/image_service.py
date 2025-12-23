@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from typing import Any, cast
 
 def process_image(image_path: str):
     image = cv2.imread(image_path)
@@ -11,7 +12,7 @@ def process_image(image_path: str):
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    brightness = float(np.mean(gray).item())
+    brightness = float(np.mean(cast(Any, gray)))
 
     edges = cv2.Canny(gray, 50, 150)
     edge_pixels = int(np.sum(edges > 0))

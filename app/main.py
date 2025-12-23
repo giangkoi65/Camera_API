@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.api import camera, event
 from app.schemas.camera import CameraCreate, CameraResponse
+from app.api.websocket import router as websocket_router
 
 app = FastAPI(title="Smart Camera API")
 # items = [
@@ -28,3 +29,4 @@ def root():
 
 app.include_router(camera.router)
 app.include_router(event.router)
+app.include_router(websocket_router)
