@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+import shutil
+import os
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -10,6 +12,8 @@ from app.db.mongo import event_logs_collection
 from app.schemas.event_log import EventLogCreate
 from datetime import datetime, timezone
 from bson import ObjectId
+
+from app.services.image_service import process_image
 
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -91,3 +95,32 @@ def get_event_logs_from_mongo(event_id: int):
         }
         for log in logs
     ]
+    
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@router.post("/{event_id}/upload-image")
+def upload_event_image(
+    event_id: int,
+    file: UploadFile = File(...)
+):
+    file_path = f"{UPLOAD_DIR}/event_{event_id}_{file.filename}"
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    image_metadata = process_image(file_path)
+
+    log_document = {
+        "event_id": event_id,
+        "image_path": file_path,
+        "image_metadata": image_metadata,
+        "created_at": datetime.utcnow()
+    }
+
+    event_logs_collection.insert_one(log_document)
+
+    return {
+        "message": "Image uploaded and processed",
+        "image_metadata": image_metadata
+    }
