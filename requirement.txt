@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-sqlalchemy
-pydantic
-pymysql
-pymongo
-opencv-python
-python-multipart
-websockets

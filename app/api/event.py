@@ -1,9 +1,7 @@
 import os
 import shutil
-from datetime import datetime, timezone
-import asyncio
+from datetime import datetime
 
-from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
@@ -27,7 +25,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 @router.post("/", response_model=EventResponse)
 async def create_event(event: EventCreate, db: Session = Depends(get_db)):
     """
-    Tạo event mới trong DB (Postgres/SQLAlchemy), sau đó push realtime qua websocket manager.
+    Tạo event mới trong DB (MySQL), sau đó push realtime qua websocket manager.
     """
     camera = db.query(Camera).filter(Camera.id == event.camera_id).first()
     if not camera:

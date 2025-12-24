@@ -1,6 +1,9 @@
+import os
 from pymongo import MongoClient
 
-MongoURI = "mongodb://localhost:27017"
+MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
+
+MongoURI = f"mongodb://{MONGO_HOST}:27017"
 DBName = "smart_camera"
 
 client = MongoClient(MongoURI)
